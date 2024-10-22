@@ -1,12 +1,17 @@
 package exercise.movieintmdb.viewmodel
 
+import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import exercise.movieintmdb.SessionDataStore
 import exercise.movieintmdb.model.Movie
 import exercise.movieintmdb.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepository
+    @ApplicationContext private val context: Context,
+    private val repository: MovieRepository,
+    private val sessionDataStore: SessionDataStore
 ): ViewModel() {
 
     private val _sessionState = MutableStateFlow<Pair<String?, String?>?>(null)
@@ -31,6 +38,17 @@ class MovieViewModel @Inject constructor(
     private var error by mutableStateOf("")
 
     var authUrl: String? by mutableStateOf(null)
+
+    init {
+        viewModelScope.launch {
+            val (sessionId, accountId) = sessionDataStore.getSessionData(context)
+            if (sessionId != null && accountId != null) {
+                _sessionState.value = Pair(sessionId, accountId)
+                showFavoriteMovies()
+                showPopularMovies()
+            }
+        }
+    }
 
     fun authenticateUser() {
         viewModelScope.launch {
@@ -47,11 +65,13 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun completeAuthorization(requestToken: String) {
+    fun completeAuthorization(context: Context, requestToken: String) {
         viewModelScope.launch {
             try {
                 val accountAndSession = repository.getAccountAndSessionID(requestToken)
                 _sessionState.value = accountAndSession
+                val sessionData = _sessionState.value
+                sessionDataStore.storeSessionData(context, sessionData?.second ?:"", sessionData?.first ?: "")
                 showFavoriteMovies()
                 showPopularMovies()
             } catch (e: Exception) {
