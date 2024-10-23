@@ -1,28 +1,20 @@
 package exercise.movieintmdb
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.Preferences
-import kotlinx.coroutines.flow.first
-import androidx.datastore.preferences.preferencesDataStore
+import com.tencent.mmkv.MMKV
 
 object SessionDataStore {
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session_data")
+    private const val MMKV_ID = "session_data"
 
-    val SESSION_ID_KEY = stringPreferencesKey("session_id")
-    val ACCOUNT_ID_KEY = stringPreferencesKey("account_id")
+    private val mmkv: MMKV by lazy { MMKV.mmkvWithID(MMKV_ID) }
 
-    suspend fun storeSessionData(context: Context, sessionId: String, accountId: String) {
-        context.dataStore.edit { preferences ->
-            preferences[SESSION_ID_KEY] = sessionId
-            preferences[ACCOUNT_ID_KEY] = accountId
-        }
+    fun storeSessionData(sessionId: String, accountId: String) {
+        mmkv.encode("session_id", sessionId)
+        mmkv.encode("account_id", accountId)
     }
 
-    suspend fun getSessionData(context: Context): Pair<String?, String?> {
-        val preferences = context.dataStore.data.first()
-        return Pair(preferences[SESSION_ID_KEY], preferences[ACCOUNT_ID_KEY])
+    fun getSessionData(): Pair<String?, String?> {
+        val sessionId = mmkv.decodeString("session_id")
+        val accountId = mmkv.decodeString("account_id")
+        return Pair(sessionId, accountId)
     }
 }

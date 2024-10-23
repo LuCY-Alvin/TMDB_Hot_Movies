@@ -14,7 +14,10 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideMovieRepository(apiService: APIService): MovieRepository {
-        return MovieRepository(apiService)
+    fun provideMovieRepository(
+        apiService: APIService,
+        sessionDataStore: SessionDataStore
+    ): MovieRepository {
+        return MovieRepository(apiService, sessionDataStore)
     }
 }

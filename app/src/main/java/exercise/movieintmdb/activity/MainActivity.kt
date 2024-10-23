@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "authentic"){
                         composable("authentic") {
                             val sessionState by movieViewModel.sessionState.collectAsState()
+                            Log.d("MainActivity", "Session state: ${sessionState?.first}")
                             LoginScreen(
                                 onLoginClick = {
                                     if (sessionState == null) navController.navigate("webView")
@@ -45,11 +46,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("webView") {
-                            Log.d("MainActivity", "Login button clicked")
                             movieViewModel.authenticateUser()
                             movieViewModel.authUrl?.let { url ->
                                 WebViewScreen(url) { token ->
-                                    movieViewModel.completeAuthorization(applicationContext, token)
+                                    movieViewModel.completeAuthorization(token)
                                     navController.navigate("movieList") {
                                         popUpTo("authentic") { inclusive = true }
                                     }
@@ -59,6 +59,8 @@ class MainActivity : ComponentActivity() {
                         composable("movieList") {
                             val movieList by movieViewModel.movies.collectAsState()
                             val favoriteMovies by movieViewModel.favoriteMovies.collectAsState()
+                            val sessionState by movieViewModel.sessionState.collectAsState()
+                            Log.d("MainActivity", "Session state: ${sessionState?.first}")
                             MovieScreen(
                                 movieList = movieList,
                                 onMovieClick = { movie ->

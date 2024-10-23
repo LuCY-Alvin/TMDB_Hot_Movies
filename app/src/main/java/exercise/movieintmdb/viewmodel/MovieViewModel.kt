@@ -2,15 +2,14 @@ package exercise.movieintmdb.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import exercise.movieintmdb.SessionDataStore
 import exercise.movieintmdb.model.Movie
 import exercise.movieintmdb.repository.MovieRepository
@@ -21,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val repository: MovieRepository,
     private val sessionDataStore: SessionDataStore
 ): ViewModel() {
@@ -41,7 +39,8 @@ class MovieViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val (sessionId, accountId) = sessionDataStore.getSessionData(context)
+            val (sessionId, accountId) = sessionDataStore.getSessionData()
+            Log.d("MovieViewModel", "Session data: $sessionId, $accountId")
             if (sessionId != null && accountId != null) {
                 _sessionState.value = Pair(sessionId, accountId)
                 showFavoriteMovies()
@@ -65,13 +64,13 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun completeAuthorization(context: Context, requestToken: String) {
+    fun completeAuthorization(requestToken: String) {
         viewModelScope.launch {
             try {
                 val accountAndSession = repository.getAccountAndSessionID(requestToken)
                 _sessionState.value = accountAndSession
                 val sessionData = _sessionState.value
-                sessionDataStore.storeSessionData(context, sessionData?.second ?:"", sessionData?.first ?: "")
+                sessionDataStore.storeSessionData(sessionData?.second ?:"", sessionData?.first ?: "")
                 showFavoriteMovies()
                 showPopularMovies()
             } catch (e: Exception) {
