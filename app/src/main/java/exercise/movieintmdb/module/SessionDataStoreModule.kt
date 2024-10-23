@@ -1,10 +1,10 @@
-package exercise.movieintmdb
+package exercise.movieintmdb.module
 
-import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import exercise.movieintmdb.storage.SessionDataStore
 import javax.inject.Singleton
 
 @Module

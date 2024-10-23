@@ -1,23 +1,35 @@
 package exercise.movieintmdb.repository
 
 import android.util.Log
-import com.tencent.mmkv.MMKV
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import exercise.movieintmdb.Constants
 import exercise.movieintmdb.model.APIService
 import exercise.movieintmdb.model.FavoriteRequest
 import exercise.movieintmdb.model.Movie
+import exercise.movieintmdb.storage.SessionDataStore
+import exercise.movieintmdb.utils.Constants
+import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Module
 @InstallIn(SingletonComponent::class)
-class MovieRepository(private val apiService: APIService) {
+class MovieRepository(
+    private val apiService: APIService,
+    private val sessionDataStore: SessionDataStore,
+) {
 
     private var accountId:String? = null
     private var sessionId:String? = null
+
+    init {
+        runBlocking {
+            val (sessionId, accountId) = sessionDataStore.getSessionData()
+            this@MovieRepository.sessionId = sessionId
+            this@MovieRepository.accountId = accountId
+        }
+    }
 
     suspend fun getPopularMovies(): List<Movie> {
         val response = apiService.getPopularMovies(Constants.API_KEY)
@@ -50,9 +62,8 @@ class MovieRepository(private val apiService: APIService) {
         val accountResponse = apiService.getAccount(Constants.API_KEY, sessionId)
         val accountId = accountResponse.body()?.id.toString()
 
-        val mmkv = MMKV.defaultMMKV()
-        mmkv.putString("session_id", sessionId)
-        mmkv.putString("account_id", accountId)
+        sessionDataStore.storeSessionData(sessionId, accountId)
+        Log.d("MovieRepository", "Session data stored: $sessionId, $accountId")
 
         this.sessionId = sessionId
         this.accountId = accountId

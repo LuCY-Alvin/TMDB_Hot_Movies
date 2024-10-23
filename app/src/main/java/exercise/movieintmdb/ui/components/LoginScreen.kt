@@ -10,16 +10,24 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import exercise.movieintmdb.viewmodel.MovieViewModel
 
 @Composable
 fun LoginScreen(
+    viewModel: MovieViewModel,
     onLoginClick: () -> Unit,
 ) {
+    val errorMessage by viewModel.error.collectAsState()
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,6 +62,13 @@ fun LoginScreen(
                 text = "Start"
             )
         }
+    }
 
+    if (errorMessage != null) {
+        ErrorDialog(
+            title = errorMessage?.first ?: "",
+            message = errorMessage?.second ?: "",
+            onDismiss = { viewModel.clearError(context) }
+        )
     }
 }
