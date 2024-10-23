@@ -1,8 +1,11 @@
 package exercise.movieintmdb
 
+import android.content.Context
+import android.net.ConnectivityManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import exercise.movieintmdb.Constants.BASE_URL
 import exercise.movieintmdb.model.APIService
@@ -24,5 +27,11 @@ object NetworkModule {
             .build()
 
         return retrofit.create(APIService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
+        return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 }

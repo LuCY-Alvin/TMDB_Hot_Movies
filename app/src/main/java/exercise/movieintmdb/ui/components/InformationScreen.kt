@@ -13,19 +13,27 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import exercise.movieintmdb.model.Movie
+import exercise.movieintmdb.viewmodel.MovieViewModel
 
 @Composable
 fun InformationScreen(
+    viewModel: MovieViewModel,
     movie: Movie,
     isFavorite: Boolean,
     onFavoriteClick: (Movie, Boolean) -> Unit
 ) {
+    val errorMessage by viewModel.error.collectAsState()
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -44,6 +52,14 @@ fun InformationScreen(
                     contentDescription = "Favorite"
                 )
             }
+        }
+
+        if (errorMessage != null) {
+            ErrorDialog(
+                title = errorMessage?.first ?: "",
+                message = errorMessage?.second ?: "",
+                onDismiss = { viewModel.clearError(context) }
+            )
         }
     }
 }

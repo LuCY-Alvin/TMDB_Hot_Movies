@@ -33,18 +33,20 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "authentic"){
+                        // Login Page
                         composable("authentic") {
                             val sessionState by movieViewModel.sessionState.collectAsState()
-                            Log.d("MainActivity", "Session state: ${sessionState?.first}")
                             LoginScreen(
+                                movieViewModel,
                                 onLoginClick = {
                                     if (sessionState == null) navController.navigate("webView")
-                                    else navController.navigate("movieList"){
+                                    else navController.navigate("movieList") {
                                         popUpTo("authentic") { inclusive = true }
                                     }
                                 }
                             )
                         }
+                        // Authentication Page
                         composable("webView") {
                             movieViewModel.authenticateUser()
                             movieViewModel.authUrl?.let { url ->
@@ -56,12 +58,12 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
+                        // Hot Movie Page
                         composable("movieList") {
                             val movieList by movieViewModel.movies.collectAsState()
                             val favoriteMovies by movieViewModel.favoriteMovies.collectAsState()
-                            val sessionState by movieViewModel.sessionState.collectAsState()
-                            Log.d("MainActivity", "Session state: ${sessionState?.first}")
                             MovieScreen(
+                                movieViewModel,
                                 movieList = movieList,
                                 onMovieClick = { movie ->
                                     movieViewModel.onMovieClicked(navController,movie.id) },
@@ -70,7 +72,7 @@ class MainActivity : ComponentActivity() {
                                 favoriteMovies = favoriteMovies
                             )
                         }
-
+                        // Movie Detail Information Page
                         composable("detail/{movieId}"){ navBackStackEntry ->
                             val movieId = navBackStackEntry.arguments?.getString("movieId")?.toIntOrNull()
                             movieId?.let { id ->
@@ -78,6 +80,7 @@ class MainActivity : ComponentActivity() {
                                 val isFavorite = movieViewModel.isFavorite(id)
                                 movie?.let {
                                     InformationScreen(
+                                        movieViewModel,
                                         movie = it,
                                         isFavorite = isFavorite,
                                         onFavoriteClick = { movie, isFavorite ->
