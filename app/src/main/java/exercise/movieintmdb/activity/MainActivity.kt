@@ -76,12 +76,12 @@ class MainActivity : ComponentActivity() {
                             val movieId = navBackStackEntry.arguments?.getString("movieId")?.toIntOrNull()
                             movieId?.let { id ->
                                 val movie = movieViewModel.getMovieById(id)
-                                val isFavorite = movieViewModel.isFavorite(id)
+                                //val isFavorite = movieViewModel.isFavorite(id)
                                 movie?.let {
                                     InformationScreen(
                                         movieViewModel,
                                         movie = it,
-                                        isFavorite = isFavorite,
+                                        //isFavorite = isFavorite,
                                         onFavoriteClick = { movie, isFavorite ->
                                             movieViewModel.onFavoriteClick(movie, isFavorite)
                                         }

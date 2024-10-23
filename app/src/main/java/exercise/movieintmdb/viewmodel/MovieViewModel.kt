@@ -3,6 +3,7 @@ package exercise.movieintmdb.viewmodel
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -125,6 +126,7 @@ class MovieViewModel @Inject constructor(
             try {
                 repository.addAsFavorite(movie.id, isFavorite)
                 showFavoriteMovies()
+                Log.d("MovieViewModel", "Favorite movies updated: ${_favoriteMovies.value.lastIndex}")
             } catch (e:Exception) {
                 _error.value = "無法更新喜愛電影" to e.message
             }
@@ -135,9 +137,10 @@ class MovieViewModel @Inject constructor(
         return _favoriteMovies.value.any { it.id == movieId }
     }
 
+
     private fun updateFavoriteStatus(movie: Movie, isFavorite: Boolean) {
         _favoriteMovies.value = if (isFavorite) {
-            _favoriteMovies.value + movie
+            _favoriteMovies.value.distinctBy { it.id }
         } else {
             _favoriteMovies.value.filter { it.id != movie.id }
         }

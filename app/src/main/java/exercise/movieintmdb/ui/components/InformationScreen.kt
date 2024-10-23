@@ -18,7 +18,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,11 +36,16 @@ import exercise.movieintmdb.viewmodel.MovieViewModel
 fun InformationScreen(
     viewModel: MovieViewModel,
     movie: Movie,
-    isFavorite: Boolean,
     onFavoriteClick: (Movie, Boolean) -> Unit
 ) {
     val errorMessage by viewModel.error.collectAsState()
     val context = LocalContext.current
+    val favoriteMovies by viewModel.favoriteMovies.collectAsState()
+    val isFavorite by remember {
+        derivedStateOf {
+            favoriteMovies.any { it.id == movie.id }
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -86,7 +93,9 @@ fun InformationScreen(
 
             IconButton(
                 onClick = { onFavoriteClick(movie, !isFavorite) },
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally).padding(bottom = 10.dp)
+                modifier = Modifier
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .padding(bottom = 10.dp)
             ) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
