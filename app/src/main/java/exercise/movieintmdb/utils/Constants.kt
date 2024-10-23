@@ -1,4 +1,6 @@
-package exercise.movieintmdb
+package exercise.movieintmdb.utils
+
+import exercise.movieintmdb.BuildConfig
 
 object Constants {
 

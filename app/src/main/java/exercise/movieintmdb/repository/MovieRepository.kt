@@ -1,17 +1,14 @@
 package exercise.movieintmdb.repository
 
-import android.content.Context
 import android.util.Log
-import com.tencent.mmkv.MMKV
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import exercise.movieintmdb.Constants
-import exercise.movieintmdb.SessionDataStore
 import exercise.movieintmdb.model.APIService
 import exercise.movieintmdb.model.FavoriteRequest
 import exercise.movieintmdb.model.Movie
+import exercise.movieintmdb.storage.SessionDataStore
+import exercise.movieintmdb.utils.Constants
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody

@@ -1,4 +1,4 @@
-package exercise.movieintmdb
+package exercise.movieintmdb.helper
 
 import android.net.ConnectivityManager
 import android.net.Network

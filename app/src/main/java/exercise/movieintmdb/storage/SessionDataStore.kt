@@ -1,4 +1,4 @@
-package exercise.movieintmdb
+package exercise.movieintmdb.storage
 
 import com.tencent.mmkv.MMKV
 

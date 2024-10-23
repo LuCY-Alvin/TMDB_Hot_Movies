@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -27,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -52,10 +50,11 @@ fun MovieScreen(
     Box(
         modifier = Modifier
             .fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
+        contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Hot Movies",
@@ -63,9 +62,13 @@ fun MovieScreen(
                 fontSize = 45.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(16.dp).background(MaterialTheme.colorScheme.primary),
-                )
-            LazyRow {
+                modifier = Modifier.fillMaxWidth().padding(16.dp).background(MaterialTheme.colorScheme.primary)
+            )
+
+            LazyRow (
+                modifier = Modifier.padding(vertical = 16.dp).height(450.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 items(movieList) { movie ->
                     val isFavorite = favoriteMovies.any { it.id == movie.id }
                     MovieItem(
@@ -112,14 +115,20 @@ fun MovieItem(
             maxLines = 2
         )
 
-        AsyncImage(
-            model = "https://image.tmdb.org/t/p/w500/${movie.posterPath}",
-            contentDescription = null,
+        Box(
             modifier = Modifier
-                    .height(250.dp)
+                .height(300.dp)
                 .fillMaxWidth(),
-            contentScale = ContentScale.Crop
-        )
+        ) {
+            AsyncImage(
+                model = "https://image.tmdb.org/t/p/w500/${movie.posterPath}",
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         IconButton(
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
@@ -127,7 +136,8 @@ fun MovieItem(
         ) {
             Icon(
                 imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = "Favorite"
+                contentDescription = "Favorite",
+                modifier = Modifier.size(40.dp)
             )
         }
     }

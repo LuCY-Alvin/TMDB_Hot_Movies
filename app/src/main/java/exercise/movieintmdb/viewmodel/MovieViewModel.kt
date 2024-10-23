@@ -1,6 +1,5 @@
 package exercise.movieintmdb.viewmodel
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
@@ -11,10 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import exercise.movieintmdb.NetworkMonitor
-import exercise.movieintmdb.SessionDataStore
+import exercise.movieintmdb.helper.NetworkMonitor
 import exercise.movieintmdb.model.Movie
 import exercise.movieintmdb.repository.MovieRepository
+import exercise.movieintmdb.storage.SessionDataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
