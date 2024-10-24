@@ -1,4 +1,4 @@
-# langlive_android_exercise
+# TMDB_Hot_Movies
 
 建構 TMDB 電影資料庫
 1. 顯示熱門電影 (包含標題、電影封面) ，點擊後可查看詳情 (電影介紹)
